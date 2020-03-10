@@ -6,55 +6,30 @@ session_start();
 include 'questions.php';
 // include 'generate_questions.php';
 
-// Make a variable to hold the total number of questions to ask
+// initialize vars
 $totalQuestions = count($questions);
-
-// Make a variable to hold the toast message and set it to an empty string
 $toastMessage = '';
-
-// Make a variable to determine if the score will be shown or not. Set it to false.
 $showScore = false;
-
-// Make a variable to hold a random index. Assign null to it.
 $randomIdx = null;
-
-// Make a variable to hold the current question. Assign null to it.
 $currentQuestion = null;
 
+// if $_SESSION['used_indexes'] hasn't been set yet, initialize our session vars 
+// if (isset($_SESSION['used_indexes']) == false) {
+//     $_SESSION["used_indexes"] = [];
+//     $_SESSION["totalCorrect"] = 0;
+//     $showScore = false;
+// }
 
-
-
-/*
-    If the server request was of type POST
-        Check if the user's answer was equal to the correct answer.
-        If it was correct:
-        1. Assign a congratulutory string to the toast variable
-            2. Ancrement the session variable that holds the total number correct by one.
-        Otherwise:
-            1. Assign a bummer message to the toast variable.
-*/
-
-    if ($_SERVER["REQUEST_METHOD"] == 'POST') {
-        if ($_POST['answer'] == $questions[$_POST['index']]['correctAnswer']) {
-            $toastMessage = "Well done!  That's correct.";
-            $_SESSION["totalCorrect"]++;
-        } else {
-            $toastMessage = "Bummer!  That was incorrect.";
-        }
+// Check user's answer
+if ($_SERVER["REQUEST_METHOD"] == 'POST') {
+    if ($_POST['answer'] == $questions[$_POST['index']]['correctAnswer']) {
+        $toastMessage = "Well done!  That's correct.";
+        // keep track of score
+        $_SESSION["totalCorrect"]++;
+    } else {
+        $toastMessage = "Bummer!  That was incorrect.";
     }
-
-
-/*
-    Check if a session variable has ever been set/created to hold the indexes of questions already asked.
-    If it has NOT: 
-        1. Create a session variable to hold used indexes and initialize it to an empty array.
-        2. Set the show score variable to false.
-*/
-if (isset($_SESSION['used_indexes']) == false) {
-    $_SESSION["used_indexes"] = [];
-    $_SESSION["totalCorrect"] = 0;
 }
-
 
 
 /*
@@ -79,9 +54,11 @@ if (isset($_SESSION['used_indexes']) == false) {
         h. Shuffle the array from step g.
 */
 
+// if the game is over, reset $_SESSION['used_indexes'] & show the score
 if (count($_SESSION['used_indexes']) == $totalQuestions)  {
     $_SESSION['used_indexes'] = [];
     $showScore = true;
+// otherwise, play round
 } else {
     $showScore = false;
     if (count($_SESSION['used_indexes']) == 0) {
@@ -89,17 +66,17 @@ if (count($_SESSION['used_indexes']) == $totalQuestions)  {
         $toastMessage = '';
     }
     do {
-        $index = rand(0, count($questions) - 1);
-    } while (in_array($_SESSION['used_indexes'], $index));
+        $randomIdx = rand(0, count($questions) - 1);
+    } while (in_array($randomIdx, $_SESSION['used_indexes']));
 
-    $question = $questions[$index];
+    $currentQuestion = $questions[$randomIdx];
 
-    array_push($_SESSION['used_indexes'], $index);
+    array_push($_SESSION['used_indexes'], $randomIdx);
 
     $answers = [
-        $question["correctAnswer"],
-        $question["firstIncorrectAnswer"],
-        $question["secondIncorrectAnswer"]
+        $currentQuestion["correctAnswer"],
+        $currentQuestion["firstIncorrectAnswer"],
+        $currentQuestion["secondIncorrectAnswer"]
     ];
     shuffle($answers);
 }

@@ -35,9 +35,9 @@ var_dump($_SESSION["totalCorrect"]);
             <?php
             if ($showScore == false) {
                 echo "<p class='breadcrumbs'>Question " . count($_SESSION["used_indexes"]) . " of " . $totalQuestions . "</p>";
-                echo "<p class='quiz'>What is " . $question["leftAdder"] . " + " . $question["rightAdder"] . "?</p>";
+                echo "<p class='quiz'>What is " . $currentQuestion["leftAdder"] . " + " . $currentQuestion["rightAdder"] . "?</p>";
                 echo "<form action='index.php' method='post'>";
-                    echo "<input type='hidden' name='index' value=" . $index . " />";
+                    echo "<input type='hidden' name='index' value=" . $randomIdx . " />";
                     echo "<input type='submit' class='btn' name='answer' value=" . $answers[0] . " />";
                     echo "<input type='submit' class='btn' name='answer' value=" . $answers[1] . " />";
                     echo "<input type='submit' class='btn' name='answer' value=" . $answers[2] . " />";
@@ -47,9 +47,9 @@ var_dump($_SESSION["totalCorrect"]);
             }
             ?>
             <!-- <p class="breadcrumbs">Question <?php echo count($_SESSION["used_indexes"]) ?> of <?php echo $totalQuestions ?></p>
-            <p class="quiz">What is <?php echo $question["leftAdder"] ?> + <?php echo $question["rightAdder"] ?>?</p>
+            <p class="quiz">What is <?php echo $currentQuestion["leftAdder"] ?> + <?php echo $currentQuestion["rightAdder"] ?>?</p>
             <form action="index.php" method="post">
-                <input type="hidden" name="index" value=<?php echo $index ?> />
+                <input type="hidden" name="index" value=<?php echo $randomIdx ?> />
                 <input type="submit" class="btn" name="answer" value=<?php echo $answers[0] ?> />
                 <input type="submit" class="btn" name="answer" value=<?php echo $answers[1] ?> />
                 <input type="submit" class="btn" name="answer" value=<?php echo $answers[2] ?> />
