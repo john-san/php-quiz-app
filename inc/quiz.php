@@ -2,27 +2,59 @@
 // Start the session
 session_start();
 
-// Include questions from the questions.php file
-include 'questions.php';
-// include 'generate_questions.php';
+// generate 10 random questions
+include 'generate_questions.php';
+if (isset($_SESSION['questions']) == false) {
+    $_SESSION['questions'] = generateQuestions(10);
+}
 
 // initialize vars
-$totalQuestions = count($questions);
+$totalQuestions = count($_SESSION['questions']);
 $toastMessage = '';
 $showScore = false;
 $randomIdx = null;
 $currentQuestion = null;
 
-// if $_SESSION['used_indexes'] hasn't been set yet, initialize our session vars 
-// if (isset($_SESSION['used_indexes']) == false) {
-//     $_SESSION["used_indexes"] = [];
-//     $_SESSION["totalCorrect"] = 0;
-//     $showScore = false;
-// }
+// set & return $randomIdx
+function getRandomIdx() {
+    global $randomIdx;
+    do {
+        $randomIdx = rand(0, count($_SESSION['questions']) - 1);
+    } while (in_array($randomIdx, $_SESSION['used_indexes']));
 
-// Check user's answer
+    return $randomIdx;
+}
+
+// return a random question 
+function getRandomQuestion() {
+    return $_SESSION['questions'][getRandomIdx()];
+}
+
+// return shuffled array of answers for display
+function createAnswersArray($currentQuestion) {
+    $answers = [
+        $currentQuestion["correctAnswer"],
+        $currentQuestion["firstIncorrectAnswer"],
+        $currentQuestion["secondIncorrectAnswer"]
+    ];
+    shuffle($answers);
+    return $answers;
+}
+
+// check if game is over
+function isGameOver() {
+    global $totalQuestions;
+    return count($_SESSION['used_indexes']) == $totalQuestions;
+}
+
+// check answer
+function isAnswerCorrect() {
+    return $_POST['answer'] == $_SESSION['questions'][$_POST['index']]['correctAnswer'];
+}
+
+// check answer
 if ($_SERVER["REQUEST_METHOD"] == 'POST') {
-    if ($_POST['answer'] == $questions[$_POST['index']]['correctAnswer']) {
+    if (isAnswerCorrect()) {
         $toastMessage = "Well done!  That's correct.";
         // keep track of score
         $_SESSION["totalCorrect"]++;
@@ -31,54 +63,24 @@ if ($_SERVER["REQUEST_METHOD"] == 'POST') {
     }
 }
 
-
-/*
-  If the number of used indexes in our session variable is equal to the total number of questions
-  to be asked:
-        1.  Reset the session variable for used indexes to an empty array 
-        2.  Set the show score variable to true.
-
-  Else:
-    1. Set the show score variable to false 
-    2. If it's the first question of the round:
-        a. Set a session variable that holds the total correct to 0. 
-        b. Set the toast variable to an empty string.
-        c. Assign a random number to a variable to hold an index. Continue doing this
-            for as long as the number generated is found in the session variable that holds used indexes.
-        d. Add the random number generated to the used indexes session variable.      
-        e. Set the individual question variable to be a question from the questions array and use the index
-            stored in the variable in step c as the index.
-        f. Create a variable to hold the number of items in the session variable that holds used indexes
-        g. Create a new variable that holds an array. The array should contain the correctAnswer,
-            firstIncorrectAnswer, and secondIncorrect answer from the variable in step e.
-        h. Shuffle the array from step g.
-*/
-
 // if the game is over, reset $_SESSION['used_indexes'] & show the score
-if (count($_SESSION['used_indexes']) == $totalQuestions)  {
+if (isGameOver())  {
     $_SESSION['used_indexes'] = [];
     $showScore = true;
-// otherwise, play round
+// otherwise, set up round
 } else {
     $showScore = false;
+    // set $_SESSION["totalCorrect"] & $toastMessage on first round
     if (count($_SESSION['used_indexes']) == 0) {
         $_SESSION["totalCorrect"] = 0;
         $toastMessage = '';
     }
-    do {
-        $randomIdx = rand(0, count($questions) - 1);
-    } while (in_array($randomIdx, $_SESSION['used_indexes']));
-
-    $currentQuestion = $questions[$randomIdx];
-
+    // get a random question & set $randomIdx
+    $currentQuestion = getRandomQuestion();
+    // keep track of used indexes
     array_push($_SESSION['used_indexes'], $randomIdx);
-
-    $answers = [
-        $currentQuestion["correctAnswer"],
-        $currentQuestion["firstIncorrectAnswer"],
-        $currentQuestion["secondIncorrectAnswer"]
-    ];
-    shuffle($answers);
+    // generate array for display
+    $answers = createAnswersArray($currentQuestion);
 }
 
 
