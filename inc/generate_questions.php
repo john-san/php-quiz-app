@@ -10,8 +10,13 @@ function generateQuestions($numberOfQuestions) {
     // Calculate correct answer
     $question["correctAnswer"] = $question["leftAdder"] + $question["rightAdder"];
     // Get incorrect answers within 10 numbers either way of correct answer
-    $question["firstIncorrectAnswer"] = $question["correctAnswer"] + rand(1,10);
-    $question["secondIncorrectAnswer"] = $question["correctAnswer"] - rand(1,10);
+    // get unique and non-negative incorrect answers, credits to Joseph Yhu from PHP TD slack
+    do {
+      $question["firstIncorrectAnswer"] = abs($question["correctAnswer"] + rand(-10,10));
+      $question["secondIncorrectAnswer"] = abs($question["correctAnswer"] + rand(-10,10));
+    } while (  $question["firstIncorrectAnswer"] === $question["correctAnswer"] ||
+               $question["firstIncorrectAnswer"] === $question["secondIncorrectAnswer"] ||
+               $question["secondIncorrectAnswer"] === $question["correctAnswer"]);
     // Add question and answer to questions array
     $questions[] = $question;
   }
