@@ -2,7 +2,7 @@
 
 include 'inc/quiz.php';
 // uncomment inc/reporting to view session variables
-include 'inc/reporting.php';
+// include 'inc/reporting.php';
 
 include 'views/header.php';
 
