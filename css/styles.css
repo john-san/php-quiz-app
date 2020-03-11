@@ -23,12 +23,15 @@ body {
 }
 
 .container {
-  height: 70%;
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 0 3%;
+  height: 50vh;
+}
+
+.invisible {
+  visibility: hidden;
 }
 
 .text-center {
@@ -38,7 +41,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  height: 75%;
+  height: 100%;
 }
 
 #quiz-box form {
@@ -93,7 +96,7 @@ body {
   background-color: var(--button-bg-color);
   padding: 15px;
   margin: 10px;
-  transition: .5s ;
+  /* transition: .5s ; */
   text-decoration: none;
 }
 .btn:hover {
