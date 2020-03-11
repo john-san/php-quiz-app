@@ -5,9 +5,12 @@ session_start();
 include 'generate_questions.php';
 include 'helpers.php';
 
-// generate questions
+// initialize session vars
 if (isset($_SESSION['questions']) == false) {
     $_SESSION['questions'] = generateQuestions(10);
+}
+if (isset($_SESSION['used_indexes']) == false) {
+    $_SESSION['used_indexes'] = [];
 }
 
 // initialize vars
