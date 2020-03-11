@@ -29,12 +29,17 @@ function createAnswersArray($currentQuestion) {
 // check if game is over
 function isGameOver() {
   global $totalQuestions;
-  return count($_SESSION['used_indexes']) == $totalQuestions;
+  return count($_SESSION['used_indexes']) == $totalQuestions && isLastIndexValid();
 }
 
-// check if post request AND if post index matches last index in used_indexes
+// check if post request
 function isValidPost() {
-  return $_SERVER["REQUEST_METHOD"] == 'POST' && end($_SESSION['used_indexes']) == $_POST['index'];
+  return $_SERVER["REQUEST_METHOD"] == 'POST' && isLastIndexValid();
+}
+
+// ensure that $_POST['index'] lines up with last index in $_SESSION['used_indexes'].  useful to check for refreshes
+function isLastIndexValid() {
+  return end($_SESSION['used_indexes']) == $_POST['index'];
 }
 
 // check answer
